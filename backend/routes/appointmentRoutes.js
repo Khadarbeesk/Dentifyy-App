@@ -37,4 +37,12 @@ router.get("/", auth, admin, async (req, res) => {
   }
 });
 
+router.delete("/delete-all", async (req, res) => {
+  try {
+    await Appointment.deleteMany({});
+    res.json({ msg: "All appointments deleted" });
+  } catch (err) {
+    res.status(500).json({ msg: "Error deleting appointments" });
+  }
+});
 module.exports = router;
