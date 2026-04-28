@@ -21,7 +21,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex justify-between items-center px-4 md:px-20 py-4 bg-white shadow-md sticky top-0 z-50 relative">
+    <div className="fixed top-0 left-0 w-full flex justify-between items-center px-6 md:px-20 py-4 bg-white shadow-md z-50">
 
       {/* LOGO */}
       <div className="flex items-center gap-2 cursor-pointer">
@@ -42,6 +42,12 @@ export default function Navbar() {
         {role === "admin" && (
           <Link to="/admin" className="hover:text-blue-500">
             Bookings
+          </Link>
+        )}
+
+        {role === "user" && (
+          <Link to="/my-appointments" className="hover:text-blue-500">
+            My Bookings
           </Link>
         )}
 
@@ -85,6 +91,12 @@ export default function Navbar() {
             </Link>
           )}
 
+          {role === "user" && (
+            <Link to="/my-appointments" onClick={() => setOpen(false)}>
+              My Bookings
+            </Link>
+          )}
+
           <button onClick={scrollToContact}>Contact</button>
 
           {token ? (
@@ -106,7 +118,6 @@ export default function Navbar() {
 
         </div>
       )}
-
     </div>
   );
 }

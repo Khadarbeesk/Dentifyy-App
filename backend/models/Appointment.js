@@ -5,9 +5,13 @@ const appointmentSchema = new mongoose.Schema({
   age: Number,
   gender: String,
   date: Date,
-  time: String,   // ✅ VERY IMPORTANT (ADD THIS)
+  time: String,
   dentistName: String,
-  clinicName: String
-});
+  clinicName: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Appointment", appointmentSchema);

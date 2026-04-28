@@ -18,7 +18,7 @@ export default function Admin() {
       return;
     }
 
-    fetch("https://dentist-backend-iam4.onrender.com/api/appointments", {
+    fetch("http://localhost:5000/api/appointments", {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
       }

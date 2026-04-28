@@ -1,69 +1,95 @@
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-
 export default function DentistCard({ dentist, onBook }) {
+
   const navigate = useNavigate();
 
   const handleBooking = () => {
     const token = localStorage.getItem("token");
 
-    // ❌ NOT LOGGED IN
-    if (!token) {
+    if (!token || token === "null" || token === "undefined") {
       alert("Please login to book appointment");
       navigate("/login");
       return;
     }
 
-    // ✅ LOGGED IN
     onBook(dentist);
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-2xl hover:-translate-y-2 transition duration-300 overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -10, scale: 1.03 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="group relative bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-md hover:shadow-2xl overflow-hidden transition-all duration-300"
+    >
 
-      <img 
-        src={dentist.image} 
-        className="h-52 w-full object-cover"
-        alt={dentist.name}
-      />
+      {/* ✨ Glow effect */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 blur-xl" />
 
-      <div className="p-5">
+      {/* 🔥 IMAGE (Hero-style animation) */}
+      <div className="relative overflow-hidden">
+        <motion.img
+          src={dentist.image}
+          initial={{ opacity: 0, y: -40, scale: 1.08 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          whileHover={{ scale: 1.05 }}
+          className="h-52 w-full object-cover"
+        />
 
-        <p className="text-green-500 text-sm font-medium">
-          ● Available
-        </p>
+        {/* overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
+      </div>
 
-        <h2 className="text-xl font-bold text-gray-800">
+      <div className="p-5 relative z-10">
+
+        {/* 🟢 Availability */}
+        <div className="flex items-center gap-2 mb-2">
+          <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
+          <span className="text-xs text-green-600 font-medium">
+            Available
+          </span>
+        </div>
+
+        {/* NAME */}
+        <h2 className="text-xl font-semibold text-gray-900">
           {dentist.name}
         </h2>
 
-        <p className="text-gray-500">
+        {/* QUALIFICATION */}
+        <p className="text-gray-500 text-sm">
           {dentist.qualification}
         </p>
 
+        {/* EXPERIENCE */}
         <p className="text-sm mt-1 text-gray-600">
           {dentist.experience} yrs experience
         </p>
 
-        <p className="text-sm text-gray-600">
+        {/* CLINIC */}
+        <p className="text-sm text-gray-500">
           {dentist.clinicName}
         </p>
 
-       <p className="text-sm text-gray-600">
-  📍 {dentist.address}
-</p>
-<p className="text-sm text-gray-500">
-  {dentist.location}
-</p>
-
+        {/* 🔘 BUTTON */}
         <button
           onClick={handleBooking}
-          className="w-full mt-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg hover:scale-105 transition"
+          className="relative w-full mt-5 py-2.5 rounded-xl font-medium text-white overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
         >
-          Book Appointment
+          {/* shimmer */}
+          <span className="absolute inset-0 bg-white/20 translate-x-[-100%] hover:translate-x-[100%] transition duration-700"></span>
+
+          <span className="relative z-10">
+            Book Appointment →
+          </span>
         </button>
 
       </div>
-    </div>
+    </motion.div>
   );
 }

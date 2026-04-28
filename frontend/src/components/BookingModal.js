@@ -1,7 +1,7 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 
 export default function BookingModal({ dentist, close }) {
+
   const [form, setForm] = useState({
     patientName: "",
     age: "",
@@ -12,6 +12,7 @@ export default function BookingModal({ dentist, close }) {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -24,6 +25,26 @@ export default function BookingModal({ dentist, close }) {
     "04:00 PM"
   ];
 
+  // ✅ FETCH BOOKED SLOTS
+  useEffect(() => {
+    if (!form.date) return;
+
+    fetch("http://localhost:5000/api/appointments")
+      .then(res => res.json())
+      .then(data => {
+        const slots = data
+          .filter(a =>
+            a.dentistName === dentist.name &&
+            new Date(a.date).toISOString().split("T")[0] === form.date
+          )
+          .map(a => a.time);
+
+        setBookedSlots(slots);
+      })
+      .catch(err => console.log(err));
+  }, [form.date, dentist.name]);
+
+  // ✅ VALIDATION
   const validate = () => {
     let newErrors = {};
 
@@ -39,17 +60,18 @@ export default function BookingModal({ dentist, close }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ SUBMIT BOOKING
   const submit = async () => {
     if (!validate()) return;
 
     setLoading(true);
 
     try {
-      await fetch("https://dentist-backend-iam4.onrender.com/api/appointments", {
+      const res = await fetch("http://localhost:5000/api/appointments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": localStorage.getItem("token")
+          Authorization: "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify({
           ...form,
@@ -58,13 +80,54 @@ export default function BookingModal({ dentist, close }) {
         })
       });
 
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.msg || "Slot already booked ❌");
+        setLoading(false);
+        return;
+      }
+
       alert("Appointment Booked ✅");
       close();
+
     } catch (err) {
       alert("Something went wrong");
     }
 
     setLoading(false);
+  };
+
+  // ✅ PAYMENT FUNCTION (FIXED)
+  const handlePayment = async () => {
+    if (!validate()) return;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/payment/create-order", {
+        method: "POST"
+      });
+
+      const data = await res.json();
+
+      const options = {
+        key: "rzp_test_SgTDrJlO9yXKVh",
+        amount: data.amount,
+        currency: data.currency,
+        name: "Dentify",
+        description: "Appointment Booking",
+        order_id: data.id,
+
+        handler: async function () {
+          await submit(); // ✅ now works perfectly
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (err) {
+      alert("Payment failed ❌");
+    }
   };
 
   return (
@@ -86,59 +149,36 @@ export default function BookingModal({ dentist, close }) {
         {/* Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {/* Name */}
-          <div>
-            <input
-              placeholder="Full Name"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              onChange={(e) => setForm({ ...form, patientName: e.target.value })}
-            />
-            {errors.patientName && <p className="text-red-500 text-sm">{errors.patientName}</p>}
-          </div>
+          <input
+            placeholder="Full Name"
+            className="w-full p-3 border rounded-lg"
+            onChange={(e) => setForm({ ...form, patientName: e.target.value })}
+          />
 
-          {/* Age */}
-          <div>
-            <input
-              type="number"
-              min="1"
-              placeholder="Age"
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              onChange={(e) => setForm({ ...form, age: e.target.value })}
-            />
-            {errors.age && <p className="text-red-500 text-sm">{errors.age}</p>}
-          </div>
+          <input
+            type="number"
+            min="1"
+            placeholder="Age"
+            className="w-full p-3 border rounded-lg"
+            onChange={(e) => setForm({ ...form, age: e.target.value })}
+          />
 
-          {/* Gender */}
-          <div>
-            <select
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-              onChange={(e) => setForm({ ...form, gender: e.target.value })}
-            >
-              <option value="">Select Gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-            {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
-          </div>
+          <select
+            className="w-full p-3 border rounded-lg"
+            onChange={(e) => setForm({ ...form, gender: e.target.value })}
+          >
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
 
-          {/* Date */}
-        <div className="mb-3">
-  <label className="block text-sm font-medium mb-1">
-    Select Date
-  </label>
-
-  <input
-    type="date"
-    min={today}
-    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-    onChange={(e) => setForm({ ...form, date: e.target.value })}
-  />
-
-  {errors.date && (
-    <p className="text-red-500 text-sm">{errors.date}</p>
-  )}
-</div>
+          <input
+            type="date"
+            min={today}
+            className="w-full p-3 border rounded-lg"
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+          />
 
         </div>
 
@@ -147,31 +187,36 @@ export default function BookingModal({ dentist, close }) {
           <p className="mb-2 font-medium">Select Time Slot</p>
 
           <div className="grid grid-cols-3 gap-2">
-            {timeSlots.map((slot) => (
-              <button
-                key={slot}
-                onClick={() => setForm({ ...form, time: slot })}
-                className={`p-2 rounded-lg border ${
-                  form.time === slot
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-100"
-                }`}
-              >
-                {slot}
-              </button>
-            ))}
-          </div>
+            {timeSlots.map((slot) => {
+              const isBooked = bookedSlots.includes(slot);
 
-          {errors.time && <p className="text-red-500 text-sm">{errors.time}</p>}
+              return (
+                <button
+                  key={slot}
+                  disabled={isBooked}
+                  onClick={() => setForm({ ...form, time: slot })}
+                  className={`p-2 rounded-lg border ${
+                    isBooked
+                      ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                      : form.time === slot
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {slot}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Submit */}
+        {/* FINAL BUTTON */}
         <button
-          onClick={submit}
+          onClick={handlePayment}
           disabled={loading}
-          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition"
+          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-lg"
         >
-          {loading ? "Booking..." : "Confirm Appointment"}
+          {loading ? "Processing..." : "Pay & Book Appointment"}
         </button>
 
       </div>

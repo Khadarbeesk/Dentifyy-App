@@ -3,6 +3,10 @@ import DentistCard from "../components/DentistCard";
 import BookingModal from "../components/BookingModal";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
+import HealthCarousel from "../components/HealthCarousel";
+import DentalCategories from "../components/DentalCategories";
+import ExperienceSection from "../components/ExperienceSection";
+
 
 export default function Home() {
   const [dentists, setDentists] = useState([]);
@@ -25,7 +29,7 @@ export default function Home() {
   );
 
   useEffect(() => {
-    fetch("https://dentist-backend-iam4.onrender.com/api/dentists")
+    fetch("http://localhost:5000/api/dentists")
       .then(res => res.json())
       .then(data => {
         setDentists(data);
@@ -38,7 +42,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen font-sans">
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100">
 
       {/* HERO */}
       <Hero />
@@ -113,8 +117,10 @@ export default function Home() {
           close={() => setSelected(null)}
         />
       )}
-
-      {/* FOOTER */}
+<HealthCarousel />
+<DentalCategories /> 
+<ExperienceSection />
+      
       <Footer />
     </div>
   );
