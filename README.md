@@ -4,15 +4,48 @@
 
 ## 📌 Description
 
-A full-stack MERN application that allows users to browse dentists, book appointments, and view bookings through an admin panel.
+Dentify is a full-stack MERN application that enables users to discover dentists, book appointments seamlessly, and manage bookings through dedicated dashboards for users, doctors, and admins.
+
+---
+## 📌 Features
+
+### 👤 User Features
+- Browse dentists with detailed profiles
+- Search & filter dentists
+- Book appointments with:
+  - Name, Age, Gender
+  - Date & Time Slot selection
+- View personal bookings (My Appointments)
+- Smooth animations and modern UI experience
 
 ---
 
-## 🚀 Live Demo
+### 🔐 Authentication
+- Secure Login & Registration
+- JWT Token-based authentication
+- Protected routes
+- Role-based redirection
 
-🌐 Frontend: https://dentify-app.netlify.app/
-🔗 Backend: https://dentist-backend-iam4.onrender.com
-💻 GitHub: https://github.com/Khadarbeesk/dentist-app
+---
+
+### 🧑‍⚕️ Doctor Features
+- View assigned appointments
+
+### 🛠️ Admin Features
+* Secure admin login
+* View all appointments (patient name, age, gender, appointment date, dentist name, clinic name, slot)
+
+---
+
+## ✨ Key Highlights
+- 🔐 JWT-based Authentication & Authorization
+- 👥 Role-Based Access (User / Admin / Doctor)
+- 📅 Smart Appointment Booking System
+- ⚡ Modern UI with Tailwind + Animations (Framer Motion)
+- 📱 Fully Responsive (Mobile + Desktop)
+- 🔎 Search & Filtering for Dentists
+- 📊 Admin Dashboard for Booking Management
+- 🧑‍⚕️ Doctor Dashboard for appointment tracking
 
 ---
 
@@ -40,42 +73,7 @@ A full-stack MERN application that allows users to browse dentists, book appoint
 ### 🛠️ Admin Dashboard
 ![Admin](./screenshots/admin.png)
 
----
 
-## 💡 Key Highlights
-
-* Clean and modular MERN architecture
-* JWT-based secure authentication system
-* Role-based access control (User/Admin)
-* Optimized UI using Tailwind CSS
-* Pagination and filtering for better user experience
-* Fully responsive design (mobile + desktop)
-
----
-
-## 📌 Features
-
-### 👤 User Features
-
-* Browse list of dentists
-* View dentist details (photo, name, experience, clinic, location, book appointment button)
-* Book appointments (patient name, age, gender, appointment date, slot - bonus feature)
-* Pagination (bonus feature)
-* Filtering by name (bonus feature)
-* Responsive UI
-
-### 🔐 Authentication
-
-* User registration & login
-* JWT-based authentication
-* Role-based access (User / Admin)
-
-### 🛠️ Admin Features
-
-* Secure admin login
-* View all appointments (patient name, age, gender, appointment date, dentist name, clinic name, slot)
-
----
 
 ## 🧰 Tech Stack
 
@@ -94,30 +92,21 @@ A full-stack MERN application that allows users to browse dentists, book appoint
 * JWT Authentication
 * RESTful API
 
-### Deployment
-
-* Frontend → Netlify
-* Backend → Render
-
----
 
 ## 📡 API Endpoints
 
 ### Auth
-
-POST /api/auth/register
-POST /api/auth/login
+POST /api/auth/register  
+POST /api/auth/login  
 
 ### Appointments
-
-POST /api/appointments
-GET /api/appointments
+POST /api/appointments  
+GET /api/appointments  
+GET /api/appointments/my  
+GET /api/appointments/doctor  
 
 ### Dentists
-
-GET /api/dentists
-
----
+GET /api/dentists  
 
 
 
